@@ -54,6 +54,28 @@ void MotorDriver123::joyCallback(const sensor_msgs::Joy::ConstPtr& joy)
 
 while(ros::ok())
 	{
+	//Check params Motor 1, 2, 3
+		if (nh_.hasParam("AxisMotor1"),nh_.hasParam("AxisMotor2"), nh_.hasParam("AxisMotor3"))
+		{
+			ROS_INFO_ONCE("The motorparameters are initialized with values: Motor1: %i, Motor2: %i, Motor3: %i.", iMotor1, iMotor2, iMotor3);
+		}
+		else
+		{
+			ROS_ERROR_ONCE("The motorparameter(s) cannot be initialized");
+			iMotor1=0; iMotor2=0, iMotor3=0;
+		}
+
+	//Check params scaler 1, 2, 3
+		if (nh_.hasParam("dScaleMotor1"),nh_.hasParam("dScaleMotor2"),nh_.hasParam("dScaleMotor3"))
+		{
+			ROS_INFO_ONCE("The scalerparameters are initialized with values: Scaler1: %f, Scaler2: %f, Scaler3: %f.", dScaleMotor1, dScaleMotor2, dScaleMotor3);
+		}
+		else
+		{
+			ROS_ERROR_ONCE("The scalerparameter(s) cannot be initialized");
+			dScaleMotor1=0; dScaleMotor2=0, dScaleMotor3=0;
+		}
+
 	// calculate speedvalues
 		dVelMotor1 = dScaleMotor1*joy->axes[iMotor1];
 		dVelMotor2 = dScaleMotor2*joy->axes[iMotor2];
@@ -77,6 +99,9 @@ while(ros::ok())
 
 		pub_VelPub.publish(msg);
 
+			ROS_DEBUG("Actual motor set state: Motor1: %f, Motor2: %f, Motor3: %f.", dVelMotor1, dVelMotor2, dVelMotor3);
+			ROS_DEBUG("Actual scaler values: Scaler1: %f, Scaler2: %f, Scaler3: %f.", dScaleMotor1, dScaleMotor2, dScaleMotor3);
+
 		ros::spinOnce();
 		loop_rate.sleep();
 
@@ -87,6 +112,8 @@ while(ros::ok())
 // Main
 int main(int argc, char** argv)
 	{
+
+		
   		ros::init(argc, argv, "MotorDrivers");
 
   		MotorDriver123 MotorDrivers;
