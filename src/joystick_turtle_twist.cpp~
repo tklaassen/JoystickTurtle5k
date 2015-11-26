@@ -1,6 +1,6 @@
 // includes
 #include <ros/ros.h>
-#include <std_msgs/Float32MultiArray.h>
+#include <geometry_msgs/Twist.h>
 #include <sensor_msgs/Joy.h>
 
 #define ROS_FRAME_RATE 100
@@ -35,7 +35,7 @@ MotorDriver123::MotorDriver123(){
 	// Read joy toppic
 	  sub_VelSub = nh_.subscribe<sensor_msgs::Joy>("joy", 1, &MotorDriver123::joyCallback, this);
 	// Publisch mutliarray with motorspeed
-	  pub_VelPub = nh_.advertise<std_msgs::Float32MultiArray>("mcWheelVelocityMps", 1);
+	  pub_VelPub = nh_.advertise<geometry_msgs::Twist>("mcWheelVelocityMps", 1);
 
 	//Check params Motor 1, 2, 3
 		if (nh_.hasParam("AxisMotor1"),nh_.hasParam("AxisMotor2"), nh_.hasParam("AxisMotor3"))
@@ -78,20 +78,14 @@ void MotorDriver123::joyCallback(const sensor_msgs::Joy::ConstPtr& joy)
 void MotorDriver123::sendValue(){
 
 	//create multiarray
-	std_msgs::Float32MultiArray msg;
+	geometry_msgs::Twist msg;
 
 	//put speedvalues into array
-	msg.data.clear();
-	msg.data.push_back(0);
-	msg.data.push_back(0);
-	msg.data.push_back(0);
-	msg.data.push_back(0);
-	msg.data.push_back(dVelMotor1);
-	msg.data.push_back(0);
-	msg.data.push_back(dVelMotor2);
-	msg.data.push_back(dVelMotor3);
-	msg.data.push_back(0);
-	msg.data.push_back(0);
+
+	msg.linear.x = dVelMotor1;
+	msg.linear.y = dVelMotor2;
+	msg.angular.z = dVelMotor3;
+
 
 	pub_VelPub.publish(msg);
 
